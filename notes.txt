@@ -1,0 +1,28 @@
+Philosophers Project : 
+this project is an introduction to the basics of multithreading and multiprocessing
+
+Process VS Thread
+Process : created using fork(). has separate memory space
+Thread : created using pthread_create(),shares same memory space
+What is a Thread?
+A thread is the smallest unit of execution within a process
+each thread runs independently but shares the same memory with other threads in the same process
+
+Types of threads :
+1.user-level threads : managed by a user-space library, if one blocked all other threads in the same process are blocked
+2.kernel-level threads : managed by kernel. each thread is treaded as a seperated unit.
+
+concurrency : multiple tasks at the same time, but not together(switching between tasks)
+parallelism : multiple tasks at the exact time (on different cores)
+
+Multithreading = multiple threads in the same process.
+Multiprocessing = multiple separate processes.
+
+Shared memory in C 
+inter-process communication
+IPC: allows multiple processes to communicate
+two or more processes can access the common memory and communication is done via this shared memory
+
+Critical Section : A part of code where shared data is accessed
+
+Mutex : a lock that allows only one thread at a time to enter a critcal Section 
