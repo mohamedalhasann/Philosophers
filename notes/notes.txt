@@ -26,3 +26,6 @@ two or more processes can access the common memory and communication is done via
 Critical Section : A part of code where shared data is accessed
 
 Mutex : a lock that allows only one thread at a time to enter a critcal Section 
+
+Deadlock in C
+Deadlock is a state in an operating system where two or more processes are stuck forever because each is waiting for a resource held by another
