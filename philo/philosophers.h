@@ -5,8 +5,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+
 #include <sys/time.h>   
 #include <time.h>
+
+typedef struct s_program t_program;
 
 typedef struct s_philosopher
 {
@@ -14,23 +17,26 @@ typedef struct s_philosopher
     pthread_t philo_thread;
     long last_meal;
     int meals_count;
-    int left;
-    int right;
+    pthread_mutex_t meal_mutex;
+    pthread_mutex_t *left_fork;
+    pthread_mutex_t *right_fork;
+    t_program *prog;
 }               t_philosopher;
 
 typedef struct s_program
 {
-    long start_time;
-    t_philosopher *philo;
+    t_philosopher *philos;
     int n_of_philos;
+    long start_time;
+    int stop_flag;
     long time_to_die;
     long time_to_eat;
     long time_to_sleep;
     int meals_must_eat;
     pthread_mutex_t *forks;
-    pthread_mutex_t print_mutex;
     pthread_mutex_t stop_mutex;
-    int stop_flag;
+    pthread_mutex_t print_mutex;
+    pthread_t monitor;
 }           t_program;
 
 long	gettime(void);
