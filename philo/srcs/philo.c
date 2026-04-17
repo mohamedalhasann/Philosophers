@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 16:27:25 by malhassa          #+#    #+#             */
-/*   Updated: 2026/04/16 16:28:13 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/04/17 20:50:07 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,35 @@ static void	*philo_routine(void *arg)
 	(void)arg;
 	return (NULL);
 }
+void	init_all_mutexes(t_program *program)
+{
+	// protection later
+	int	i;
 
+	i = 0;
+	while (i < program->n_of_philos)
+	{
+		pthread_mutex_init(&program->forks[i],NULL);
+		pthread_mutex_init(&program->philos[i].meal_mutex,NULL);
+		i++;
+	}
+	pthread_mutex_init(&program->print_mutex,NULL);
+	pthread_mutex_init(&program->stop_mutex,NULL);
+	i = 0;
+	while (i < program->n_of_philos)
+	{
+		program->philos[i].id = i+1;
+		program->philos[i].left_fork = &program->forks[i];
+		program->philos[i].right_fork = &program->forks[(i+1) % program->n_of_philos];
+		i++;
+	}
+}
 void	create_threads(t_program *program)
 {
 	int	i;
 
 	i = 0;
+	init_all_mutexes(program);
 	while (i < program->n_of_philos)
 	{
 		if (pthread_create(&program->philos[i].philo_thread, NULL,
