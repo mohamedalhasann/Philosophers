@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
+/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 16:27:25 by malhassa          #+#    #+#             */
-/*   Updated: 2026/04/17 20:52:49 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/19 18:00:28 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
+#include <bits/pthreadtypes.h>
+#include <pthread.h>
 
 
 static void args_error(char *message)
@@ -47,10 +49,33 @@ static void args_check(t_program *program,int argc, char **argv)
     else
         program->meals_must_eat = -1;
 }
-
+void	lock_routine(char *message, pthread_mutex_t *mutex,int print)
+{
+	pthread_mutex_lock(mutex);
+	printf("%s %d",message,print);
+	pthread_mutex_unlock(mutex);
+}
 static void	*philo_routine(void *arg)
 {
-	(void)arg;
+	t_philosopher *philo;
+	
+	philo = (t_philosopher *)arg;
+	lock_routine("THREAD ", &philo->prog->print_mutex,philo->i);
+	if (philo -> i % 2 == 0)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(philo->right_fork);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(philo->left_fork);
+	}
+	lock_routine("is eating", &philo->prog->print_mutex, philo->i);
+	usleep(philo->prog->time_to_eat);
+	philo->last_meal = gettime();
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
 	return (NULL);
 }
 void	init_all_mutexes(t_program *program)
@@ -70,13 +95,16 @@ void	init_all_mutexes(t_program *program)
 	i = 0;
 	while (i < program->n_of_philos)
 	{
-		program->philos[i].id = i+1;
+		program->philos[i].i = i+1;
 		program->philos[i].left_fork = &program->forks[i];
 		program->philos[i].right_fork = &program->forks[(i+1) % program->n_of_philos];
+		program->philos[i].prog = program;
+		program->philos[i].meals_count = 0;
+		program->philos[i].last_meal = program->start_time;
 		i++;
 	}
 }
-void	create_threads(t_program *program)
+void	create_join_threads(t_program *program)
 {
 	int	i;
 
@@ -86,7 +114,14 @@ void	create_threads(t_program *program)
 	{
 		if (pthread_create(&program->philos[i].philo_thread, NULL,
 				philo_routine, &program->philos[i]) != 0)
-			args_error("pthread_create failed\n");
+			args_error("pthread_create failed \n");
+		i++;
+	}
+	i = 0;
+	while (i < program->n_of_philos)
+	{
+		if (pthread_join(program->philos[i].philo_thread,  NULL) != 0)
+			args_error(" pthread_join failed\n");
 		i++;
 	}
 }
@@ -104,7 +139,8 @@ int	allocate_data(t_program *program)
 		return (0);
 	}
 	program->start_time = gettime();
-	create_threads(program);
+	program->stop_flag = 0;
+	create_join_threads(program);
 	return (1);
 }
 

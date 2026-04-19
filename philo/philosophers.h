@@ -5,15 +5,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-
 #include <sys/time.h>   
 #include <time.h>
 
 typedef struct s_program t_program;
-
+// died or meals must eat
 typedef struct s_philosopher
 {
-    int id;
+    int i;
     pthread_t philo_thread;
     long last_meal;
     int meals_count;
@@ -22,7 +21,7 @@ typedef struct s_philosopher
     pthread_mutex_t *right_fork;
     t_program *prog;
 }               t_philosopher;
-
+// meal mutex -> monitoring -> meals count  last meal died or not | philosopher -> meals count eating get time in ms
 typedef struct s_program
 {
     t_philosopher *philos;
