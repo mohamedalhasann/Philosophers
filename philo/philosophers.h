@@ -40,4 +40,8 @@ typedef struct s_program
 
 long	gettime(void);
 int	ft_atoi(const char *nptr);
+void args_error(char *message);
+int  time_check(t_program *program);
+void args_check(t_program *program,int argc, char **argv);
+void	init_all_mutexes(t_program *program);
 #endif
