@@ -6,7 +6,7 @@
 /*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 16:27:25 by malhassa          #+#    #+#             */
-/*   Updated: 2026/04/20 16:26:05 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/21 15:32:32 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 #include <bits/pthreadtypes.h>
 #include <pthread.h>
 
-void	lock_routine(char *message, pthread_mutex_t *mutex,int print)
+void	lock_routine(long time,int i,char *philo_action, pthread_mutex_t *mutex)
 {
 	pthread_mutex_lock(mutex);
-	printf("%s %d",message,print);
+	printf("%ld Philo %d %s\n",time,i,philo_action);
 	pthread_mutex_unlock(mutex);
 }
 static void	*philo_routine(void *arg)
@@ -42,7 +42,6 @@ static void	*philo_routine(void *arg)
 			break;
 		}
 		pthread_mutex_unlock(&philo->meal_mutex);
-		lock_routine("PHILO ", &philo->prog->print_mutex,philo->i);	
 		if (philo -> i % 2 == 0)
 		{
 			pthread_mutex_lock(philo->left_fork);
@@ -53,7 +52,9 @@ static void	*philo_routine(void *arg)
 			pthread_mutex_lock(philo->right_fork);
 			pthread_mutex_lock(philo->left_fork);
 		}
-		lock_routine("is eating", &philo->prog->print_mutex, philo->i);
+		lock_routine(gettime() - philo->prog->start_time, philo->i,"has taken a fork",&philo->prog->print_mutex);
+		lock_routine(gettime() - philo->prog->start_time, philo->i,"has taken a fork",&philo->prog->print_mutex);
+		lock_routine(gettime() - philo->prog->start_time, philo->i, "is eating", &philo->prog->print_mutex);
 		usleep(philo->prog->time_to_eat * 1000);
 		philo->last_meal = gettime();
 		pthread_mutex_unlock(philo->left_fork);
@@ -61,8 +62,10 @@ static void	*philo_routine(void *arg)
 		pthread_mutex_lock(&philo->meal_mutex);
 		philo->meals_count++;
 		pthread_mutex_unlock(&philo->meal_mutex);
+		lock_routine(gettime() - philo->prog->start_time, philo->i, "is sleeping", &philo->prog->print_mutex);
+		usleep(philo->prog->time_to_sleep * 1000);
+		lock_routine(gettime() - philo->prog->start_time, philo->i, "is thinking", &philo->prog->print_mutex);
 	}
-	printf("PHILO %d died",philo->i);
 	return (NULL);
 }
 
