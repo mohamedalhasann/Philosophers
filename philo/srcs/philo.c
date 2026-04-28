@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
+/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 16:27:25 by malhassa          #+#    #+#             */
-/*   Updated: 2026/04/26 23:46:11 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/28 16:47:35 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
+#include <pthread.h>
 
 void	lock_routine(long time, int i, char *philo_action,
 		pthread_mutex_t *mutex)
 {
 	pthread_mutex_lock(mutex);
-	printf("%ld Philo %d %s\n", time, i, philo_action);
+	printf("%ld %d %s\n", time, i, philo_action);
 	pthread_mutex_unlock(mutex);
 }
 // static void critical_section(pthread_mutex_t *mutex, char *action)
@@ -70,7 +71,7 @@ static void	*philo_routine(void *arg)
 		if (philo->prog->stop_flag == 1)
 		{
 			pthread_mutex_unlock(&philo->prog->stop_mutex);
-			break ;
+			exit(1	) ;
 		}
 		pthread_mutex_unlock(&philo->prog->stop_mutex);
 		pthread_mutex_lock(&philo->meal_mutex);
@@ -99,8 +100,40 @@ static void	*one_philo_routine(void *arg)
 	lock_routine(gettime() - philo->prog->start_time, philo->i,
 			"has taken a fork", &philo->prog->print_mutex);
 	usleep(philo->prog->time_to_die * 1000);
+	lock_routine(gettime() - philo->prog->start_time, philo->i,
+			"died", &philo->prog->print_mutex);
+	pthread_mutex_lock(&philo->prog->stop_mutex);
+	philo->prog->stop_flag = 1;
+	pthread_mutex_unlock(&philo->prog->stop_mutex);
 	pthread_mutex_unlock(philo->left_fork);
 	return (NULL);
+}
+static void *monitor_routine(void *arg)
+{
+	t_program	*prog;
+	int			i;
+
+	prog = (t_program *)arg;
+	while (1)
+	{
+		i = 0;
+		while (i < prog->n_of_philos)
+		{
+			pthread_mutex_lock(&prog->philos[i].meal_mutex);
+			if (gettime() - prog->philos[i].last_meal >= prog->time_to_die)
+			{
+				lock_routine(gettime() - prog->start_time,
+					prog->philos[i].i, "died", &prog->print_mutex);
+				pthread_mutex_unlock(&prog->philos[i].meal_mutex);
+				pthread_mutex_lock(&prog->stop_mutex);
+				prog->stop_flag = 1;
+				pthread_mutex_unlock(&prog->stop_mutex);
+				return (NULL);
+			}
+			pthread_mutex_unlock(&prog->philos[i].meal_mutex);
+			i++;
+		}
+	}
 }
 void	create_join_threads(t_program *program)
 {
@@ -124,6 +157,8 @@ void	create_join_threads(t_program *program)
 			i++;
 		}
 	}
+	if (pthread_create(&program->monitor, NULL, monitor_routine, program) != 0)
+		args_error("pthread create failed\n");
 	i = 0;
 	while (i < program->n_of_philos)
 	{
@@ -131,6 +166,8 @@ void	create_join_threads(t_program *program)
 			args_error(" pthread_join failed\n");
 		i++;
 	}
+	if (pthread_join(program->monitor,NULL) != 0)
+		args_error("pthread_join failed\n");
 }
 
 int	allocate_data(t_program *program)
