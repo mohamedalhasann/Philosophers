@@ -3,7 +3,7 @@ NAME	= philo
 CC		= cc
 FLAGS	= -pthread -Wall -Wextra -Werror
 
-SRCS	= srcs/philo.c srcs/philo_utils.c srcs/syntax.c
+SRCS	= srcs/philo.c srcs/philo_utils.c srcs/syntax.c srcs/philos_actions.c srcs/philos_routine.c
 OBJS	= $(SRCS:.c=.o)
 
 .PHONY: all clean fclean re
@@ -16,8 +16,10 @@ $(NAME): $(OBJS)
 %.o: %.c philosophers.h
 	$(CC) $(FLAGS) -c $< -o $@
 
+
 clean:
 	rm -f $(OBJS)
+	rm -rf *.dSYM
 
 fclean: clean
 	rm -f $(NAME)
