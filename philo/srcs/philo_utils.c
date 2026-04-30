@@ -3,36 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   philo_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
+/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 16:33:59 by malhassa          #+#    #+#             */
-/*   Updated: 2026/04/19 22:04:52 by mohamed          ###   ########.fr       */
+/*   Updated: 2026/04/30 14:02:03 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
+#include <limits.h>
 
-int	ft_atoi(const char *nptr) // non-digit rejection/overflow detection?
+int	ft_atoi(const char *nptr)
 {
-	int sign;
-	int result;
+	long	result;
 
-	sign = 1;
-	result = 0;
+	if (!nptr)
+		return (-1);
 	while ((*nptr >= 9 && *nptr <= 13) || *nptr == 32)
 		nptr++;
-	if (*nptr == '-' || *nptr == '+')
-	{
-		if (*nptr == '-')
-			sign *= -1;
+	if (*nptr == '-')
+		return (-1);
+	if (*nptr == '+')
 		nptr++;
-	}
+	if (*nptr < '0' || *nptr > '9')
+		return (-1);
+	result = 0;
 	while (*nptr >= '0' && *nptr <= '9')
 	{
 		result = result * 10 + (*nptr - '0');
+		if (result > INT_MAX)
+			return (-1);
 		nptr++;
 	}
-	return (result * sign);
+	if (*nptr != '\0')
+		return (-1);
+	return ((int)result);
 }
 
 long	gettime(void)
@@ -63,8 +68,7 @@ void	init_all_mutexes(t_program *program)
 	{
 		program->philos[i].i = i + 1;
 		program->philos[i].left_fork = &program->forks[i];
-		program->philos[i].right_fork = &program->forks[(i + 1)
-			% program->n_of_philos];
+		program->philos[i].right_fork = &program->forks[(i + 1) % program->n_of_philos];
 		program->philos[i].prog = program;
 		program->philos[i].meals_count = 0;
 		program->philos[i].last_meal = program->start_time;
