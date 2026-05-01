@@ -3,28 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   philo_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/30 17:39:30 by malhassa          #+#    #+#             */
-/*   Updated: 2026/04/30 17:40:02 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/01 20:14:28 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
 
-void	destroy_all_mutexes(t_program *program)
+int ft_strlen(char *s)
 {
-	int	i;
-
+    int i;
+	
 	i = 0;
-	while (i < program->n_of_philos)
-	{
-		pthread_mutex_destroy(&program->forks[i]);
-		pthread_mutex_destroy(&program->philos[i].meal_mutex);
-		i++;
-	}
-	pthread_mutex_destroy(&program->print_mutex);
-	pthread_mutex_destroy(&program->stop_mutex);
+    if (!s)
+        return (i);
+    while (s[i])
+        i++;
+    return (i);
 }
 
 int	ft_atoi(const char *nptr)
@@ -62,33 +59,6 @@ long	gettime(void)
 	gettimeofday(&tev, NULL);
 	current_time = (tev.tv_sec * 1000) + (tev.tv_usec / 1000);
 	return (current_time);
-}
-
-void	init_all_mutexes(t_program *program)
-{
-	int	i;
-
-	i = 0;
-	while (i < program->n_of_philos)
-	{
-		pthread_mutex_init(&program->forks[i], NULL);
-		pthread_mutex_init(&program->philos[i].meal_mutex, NULL);
-		i++;
-	}
-	pthread_mutex_init(&program->print_mutex, NULL);
-	pthread_mutex_init(&program->stop_mutex, NULL);
-	i = 0;
-	while (i < program->n_of_philos)
-	{
-		program->philos[i].i = i + 1;
-		program->philos[i].left_fork = &program->forks[i];
-		program->philos[i].right_fork = &program->forks[(i + 1)
-			% program->n_of_philos];
-		program->philos[i].prog = program;
-		program->philos[i].meals_count = 0;
-		program->philos[i].last_meal = program->start_time;
-		i++;
-	}
 }
 
 int	ft_strcmp(char *str, char *str2)

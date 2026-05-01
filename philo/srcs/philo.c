@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/11 16:27:25 by malhassa          #+#    #+#             */
-/*   Updated: 2026/04/30 17:40:45 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/01 21:11:36 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ int	stop_simulation_check(t_program *prog, int i, int *count)
 	pthread_mutex_lock(&prog->philos[i].meal_mutex);
 	if (gettime() - prog->philos[i].last_meal >= prog->time_to_die)
 	{
-		lock_routine(gettime() - prog->start_time, prog->philos[i].i, "died",
-			&prog->print_mutex, prog);
+		lock_routine(gettime() - prog->start_time,
+			&prog->print_mutex, &prog->philos[i], "died");
 		pthread_mutex_unlock(&prog->philos[i].meal_mutex);
 		pthread_mutex_lock(&prog->stop_mutex);
 		prog->stop_flag = 1;
@@ -41,7 +41,7 @@ int	stop_simulation_check(t_program *prog, int i, int *count)
 	return (0);
 }
 
-void	create_threads(t_program *program)
+int	create_threads(t_program *program)
 {
 	int	i;
 
@@ -51,7 +51,7 @@ void	create_threads(t_program *program)
 	{
 		if (pthread_create(&program->philos[i].philo_thread, NULL,
 				one_philo_routine, &program->philos[i]) != 0)
-			args_error("pthread_create failed\n", program);
+			return (0);
 	}
 	else
 	{
@@ -59,15 +59,16 @@ void	create_threads(t_program *program)
 		{
 			if (pthread_create(&program->philos[i].philo_thread, NULL,
 					philo_routine, &program->philos[i]) != 0)
-				args_error("pthread_create failed \n", program);
+				return (0);
 			i++;
 		}
 	}
 	if (pthread_create(&program->monitor, NULL, monitor_routine, program) != 0)
-		args_error("pthread create failed\n", program);
+		return (0);
+	return (1);
 }
 
-void	join_threads(t_program *program)
+int	join_threads(t_program *program)
 {
 	int	i;
 
@@ -75,29 +76,11 @@ void	join_threads(t_program *program)
 	while (i < program->n_of_philos)
 	{
 		if (pthread_join(program->philos[i].philo_thread, NULL) != 0)
-			args_error(" pthread_join failed\n", program);
+			return (0);
 		i++;
 	}
 	if (pthread_join(program->monitor, NULL) != 0)
-		args_error("pthread_join failed\n", program);
-}
-
-int	allocate_data(t_program *program)
-{
-	program->philos = malloc(program->n_of_philos * sizeof(t_philosopher));
-	if (!program->philos)
 		return (0);
-	program->forks = malloc(program->n_of_philos * sizeof(pthread_mutex_t));
-	if (!program->forks)
-	{
-		free(program->philos);
-		program->philos = NULL;
-		return (0);
-	}
-	program->start_time = gettime();
-	program->stop_flag = 0;
-	create_threads(program);
-	join_threads(program);
 	return (1);
 }
 
@@ -112,7 +95,13 @@ int	main(int argc, char **argv)
 	}
 	args_check(&program, argc, argv);
 	if (!allocate_data(&program))
-		args_error("allocation failed\n", &program);
+	{
+		if (program.philos)
+			free(program.philos);
+		if (program.forks)
+			free(program.forks);
+		args_error("allocation failed\n");
+	}
 	memory_cleanup(&program);
 	return (0);
 }

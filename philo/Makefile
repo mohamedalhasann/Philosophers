@@ -3,7 +3,7 @@ NAME	= philo
 CC		= cc
 FLAGS	= -pthread -Wall -Wextra -Werror
 
-SRCS	= srcs/philo.c srcs/philo_utils.c srcs/syntax.c srcs/philos_actions.c srcs/philos_routine.c
+SRCS	= srcs/philo.c srcs/philo_utils.c srcs/syntax.c srcs/philos_actions.c srcs/philos_routine.c srcs/memory_utils.c
 OBJS	= $(SRCS:.c=.o)
 
 .PHONY: all clean fclean re

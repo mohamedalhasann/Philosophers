@@ -8,7 +8,6 @@
 #include <pthread.h>
 #include <limits.h>
 #include <sys/time.h>   
-#include <bits/pthreadtypes.h>
 #include <time.h>
 
 typedef struct s_program t_program;
@@ -43,18 +42,21 @@ long	gettime(void);
 void    memory_cleanup(t_program *program);
 void    destroy_all_mutexes(t_program *program);
 int	ft_atoi(const char *nptr);
-void args_error(char *message,t_program *prog);
+void args_error(char *message);
 int  time_check(t_program *program);
 void args_check(t_program *program,int argc, char **argv);
 void sleep_process(t_philosopher *philo);
-void lock_routine(long time, int i, char *philo_action, pthread_mutex_t *mutex, t_program *program);
-void pick_forks(t_philosopher *philo);
+void lock_routine(long time, pthread_mutex_t *mutex, t_philosopher *philo, char *philo_action);
 void eating_process(t_philosopher *philo);
 void *philo_routine(void *arg);
 int stop_simulation_check(t_program *prog, int i, int *count);
 void ft_sleep(long time, t_program *program);
 void *one_philo_routine(void *arg);
+int	create_threads(t_program *program);
+int	join_threads(t_program *program);
+int ft_strlen(char *s);
 void *monitor_routine(void *arg);
 void init_all_mutexes(t_program *program);
+int	allocate_data(t_program *program);
 int ft_strcmp(char *str, char *str2);
 #endif
