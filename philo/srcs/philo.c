@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/11 16:27:25 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/01 21:11:36 by mohamed          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../philosophers.h"
 #include <pthread.h>
@@ -19,8 +8,8 @@ int	stop_simulation_check(t_program *prog, int i, int *count)
 	pthread_mutex_lock(&prog->philos[i].meal_mutex);
 	if (gettime() - prog->philos[i].last_meal >= prog->time_to_die)
 	{
-		lock_routine(gettime() - prog->start_time,
-			&prog->print_mutex, &prog->philos[i], "died");
+		lock_routine(gettime() - prog->start_time, &prog->print_mutex,
+			&prog->philos[i], "died");
 		pthread_mutex_unlock(&prog->philos[i].meal_mutex);
 		pthread_mutex_lock(&prog->stop_mutex);
 		prog->stop_flag = 1;
@@ -95,13 +84,7 @@ int	main(int argc, char **argv)
 	}
 	args_check(&program, argc, argv);
 	if (!allocate_data(&program))
-	{
-		if (program.philos)
-			free(program.philos);
-		if (program.forks)
-			free(program.forks);
 		args_error("allocation failed\n");
-	}
 	memory_cleanup(&program);
 	return (0);
 }

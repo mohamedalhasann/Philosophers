@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   memory_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/01 19:06:00 by mohamed           #+#    #+#             */
-/*   Updated: 2026/05/01 21:11:45 by mohamed          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../philosophers.h"
 
@@ -26,6 +15,7 @@ void	destroy_all_mutexes(t_program *program)
 	pthread_mutex_destroy(&program->print_mutex);
 	pthread_mutex_destroy(&program->stop_mutex);
 }
+
 void	memory_cleanup(t_program *program)
 {
 	if (!program)
@@ -63,6 +53,7 @@ void	init_all_mutexes(t_program *program)
 		i++;
 	}
 }
+
 int	allocate_data(t_program *program)
 {
 	int	create_result;
@@ -70,12 +61,13 @@ int	allocate_data(t_program *program)
 
 	program->philos = malloc(program->n_of_philos * sizeof(t_philosopher));
 	if (!program->philos)
-		return (0); 
+		return (0);
 	program->forks = malloc(program->n_of_philos * sizeof(pthread_mutex_t));
 	if (!program->forks)
-    {
-        return (0);
-    }
+	{
+		free(program->philos);
+		return (0);
+	}
 	program->start_time = gettime();
 	program->stop_flag = 0;
 	create_result = create_threads(program);
@@ -83,11 +75,12 @@ int	allocate_data(t_program *program)
 	if (!create_result)
 		write(2, "pthread_create failed\n", 23);
 	else if (!join_result)
-		write(2, "pthread_join failed\n", 21);    
+		write(2, "pthread_join failed\n", 21);
 	return (create_result && join_result);
 }
+
 void	args_error(char *message)
 {
-	write(2,message, ft_strlen(message));
+	write(2, message, ft_strlen(message));
 	exit(1);
 }

@@ -1,27 +1,16 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   philo_utils.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/30 17:39:30 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/01 20:14:28 by mohamed          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../philosophers.h"
 
-int ft_strlen(char *s)
+int	ft_strlen(char *s)
 {
-    int i;
-	
+	int	i;
+
 	i = 0;
-    if (!s)
-        return (i);
-    while (s[i])
-        i++;
-    return (i);
+	if (!s)
+		return (i);
+	while (s[i])
+		i++;
+	return (i);
 }
 
 int	ft_atoi(const char *nptr)

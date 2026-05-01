@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   philos_routine.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/30 17:21:01 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/01 20:17:21 by mohamed          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../philosophers.h"
 
@@ -68,7 +57,8 @@ void	*philo_routine(void *arg)
 	return (NULL);
 }
 
-void	lock_routine(long time,pthread_mutex_t *mutex, t_philosopher *philo,char *philo_action)
+void	lock_routine(long time, pthread_mutex_t *mutex, t_philosopher *philo,
+		char *philo_action)
 {
 	pthread_mutex_lock(&philo->prog->stop_mutex);
 	if (philo->prog->stop_flag != 1 || ft_strcmp(philo_action, "died") == 0)
@@ -79,14 +69,15 @@ void	lock_routine(long time,pthread_mutex_t *mutex, t_philosopher *philo,char *p
 	}
 	pthread_mutex_unlock(&philo->prog->stop_mutex);
 }
+
 void	*one_philo_routine(void *arg)
 {
-	t_philosopher *philo;
+	t_philosopher	*philo;
 
 	philo = (t_philosopher *)arg;
 	pthread_mutex_lock(philo->left_fork);
-	lock_routine(gettime() - philo->prog->start_time,
-			&philo->prog->print_mutex, philo, "has taken a fork");
+	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
+		philo, "has taken a fork");
 	ft_sleep(philo->prog->time_to_die, philo->prog);
 	pthread_mutex_lock(&philo->prog->stop_mutex);
 	philo->prog->stop_flag = 1;

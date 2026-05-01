@@ -19,7 +19,6 @@ $(NAME): $(OBJS)
 
 clean:
 	rm -f $(OBJS)
-	rm -rf *.dSYM
 
 fclean: clean
 	rm -f $(NAME)
