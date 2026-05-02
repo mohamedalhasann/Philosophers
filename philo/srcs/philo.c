@@ -1,7 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/02 12:17:07 by malhassa          #+#    #+#             */
+/*   Updated: 2026/05/02 12:49:34 by malhassa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../philosophers.h"
-#include <pthread.h>
-#include <stddef.h>
 
 int	stop_simulation_check(t_program *prog, int i, int *count)
 {
@@ -80,11 +89,15 @@ int	main(int argc, char **argv)
 	if (argc != 5 && argc != 6)
 	{
 		printf("invalid number of arguments\n");
-		exit(1);
+		return (1);
 	}
-	args_check(&program, argc, argv);
+	if (!args_check(&program, argc, argv))
+		return (1);
 	if (!allocate_data(&program))
-		args_error("allocation failed\n");
+	{
+		write(2, "allocation failed\n", 19);
+		return (1);
+	}
 	memory_cleanup(&program);
 	return (0);
 }

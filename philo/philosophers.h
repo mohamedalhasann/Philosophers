@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophers.h                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/02 12:17:27 by malhassa          #+#    #+#             */
+/*   Updated: 2026/05/02 12:49:34 by malhassa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
@@ -41,9 +53,8 @@ long						gettime(void);
 void						memory_cleanup(t_program *program);
 void						destroy_all_mutexes(t_program *program);
 int							ft_atoi(const char *nptr);
-void						args_error(char *message);
 int							time_check(t_program *program);
-void						args_check(t_program *program, int argc,
+int							args_check(t_program *program, int argc,
 								char **argv);
 void						sleep_process(t_philosopher *philo);
 void						lock_routine(long time, pthread_mutex_t *mutex,
@@ -61,4 +72,5 @@ void						*monitor_routine(void *arg);
 void						init_all_mutexes(t_program *program);
 int							allocate_data(t_program *program);
 int							ft_strcmp(char *str, char *str2);
+int							args_error(char *message);
 #endif

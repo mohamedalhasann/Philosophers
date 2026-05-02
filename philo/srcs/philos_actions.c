@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philos_actions.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/02 12:17:11 by malhassa          #+#    #+#             */
+/*   Updated: 2026/05/02 14:26:13 by malhassa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../philosophers.h"
 
@@ -25,7 +36,7 @@ void	ft_sleep(long time, t_program *program)
 	}
 }
 
-void	even_pick_forks(t_philosopher *philo)
+int	even_pick_forks(t_philosopher *philo)
 {
 	pthread_mutex_lock(philo->left_fork);
 	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
@@ -35,15 +46,16 @@ void	even_pick_forks(t_philosopher *philo)
 	{
 		pthread_mutex_unlock(&philo->prog->stop_mutex);
 		pthread_mutex_unlock(philo->left_fork);
-		return ;
+		return (0);
 	}
 	pthread_mutex_unlock(&philo->prog->stop_mutex);
 	pthread_mutex_lock(philo->right_fork);
 	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
 		philo, "has taken a fork");
+	return (1);
 }
 
-void	odd_pick_forks(t_philosopher *philo)
+int	odd_pick_forks(t_philosopher *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
 	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
@@ -53,20 +65,27 @@ void	odd_pick_forks(t_philosopher *philo)
 	{
 		pthread_mutex_unlock(&philo->prog->stop_mutex);
 		pthread_mutex_unlock(philo->right_fork);
-		return ;
+		return (0);
 	}
 	pthread_mutex_unlock(&philo->prog->stop_mutex);
 	pthread_mutex_lock(philo->left_fork);
 	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
 		philo, "has taken a fork");
+	return (1);
 }
 
 void	eating_process(t_philosopher *philo)
 {
 	if (philo->i % 2 == 0)
-		even_pick_forks(philo);
+	{
+		if (!even_pick_forks(philo))
+			return ;
+	}
 	else
-		odd_pick_forks(philo);
+	{
+		if (!odd_pick_forks(philo))
+			return ;
+	}
 	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
 		philo, "is eating");
 	pthread_mutex_lock(&philo->meal_mutex);
@@ -87,4 +106,6 @@ void	sleep_process(t_philosopher *philo)
 	ft_sleep(philo->prog->time_to_sleep, philo->prog);
 	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
 		philo, "is thinking");
+	if (philo->prog->n_of_philos % 2 == 1)
+			ft_sleep(1, philo->prog);
 }

@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   memory_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/02 12:16:50 by malhassa          #+#    #+#             */
+/*   Updated: 2026/05/02 12:49:34 by malhassa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../philosophers.h"
 
@@ -79,8 +90,8 @@ int	allocate_data(t_program *program)
 	return (create_result && join_result);
 }
 
-void	args_error(char *message)
+int	args_error(char *message)
 {
 	write(2, message, ft_strlen(message));
-	exit(1);
+	return (0);
 }
