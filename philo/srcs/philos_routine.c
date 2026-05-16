@@ -6,7 +6,7 @@
 /*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:18 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/02 14:26:29 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/16 14:48:47 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void	*monitor_routine(void *arg)
 				return (NULL);
 			i++;
 		}
-		ft_sleep(1, prog);
 	}
 }
 

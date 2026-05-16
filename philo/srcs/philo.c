@@ -6,7 +6,7 @@
 /*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:07 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/02 12:49:34 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/16 15:08:36 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	stop_simulation_check(t_program *prog, int i, int *count)
 {
 	pthread_mutex_lock(&prog->philos[i].meal_mutex);
-	if (gettime() - prog->philos[i].last_meal >= prog->time_to_die)
+	if (gettime() - prog->philos[i].last_meal > prog->time_to_die)
 	{
 		lock_routine(gettime() - prog->start_time, &prog->print_mutex,
 			&prog->philos[i], "died");
