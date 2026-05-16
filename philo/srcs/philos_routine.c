@@ -6,7 +6,7 @@
 /*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:18 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/16 14:48:47 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/16 18:17:42 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,18 @@ void	*monitor_routine(void *arg)
 	}
 }
 
+int	check_stop_flag(t_program *prog)
+{
+	pthread_mutex_lock(&prog->stop_mutex);
+	if (prog->stop_flag == 1)
+	{
+		pthread_mutex_unlock(&prog->stop_mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&prog->stop_mutex);
+	return (0);
+}
+
 void	*philo_routine(void *arg)
 {
 	t_philosopher	*philo;
@@ -46,13 +58,8 @@ void	*philo_routine(void *arg)
 	philo = (t_philosopher *)arg;
 	while (1)
 	{
-		pthread_mutex_lock(&philo->prog->stop_mutex);
-		if (philo->prog->stop_flag == 1)
-		{
-			pthread_mutex_unlock(&philo->prog->stop_mutex);
+		if (check_stop_flag(philo->prog))
 			break ;
-		}
-		pthread_mutex_unlock(&philo->prog->stop_mutex);
 		pthread_mutex_lock(&philo->meal_mutex);
 		if (philo->prog->meals_must_eat != -1
 			&& philo->meals_count >= philo->prog->meals_must_eat)
@@ -61,8 +68,8 @@ void	*philo_routine(void *arg)
 			break ;
 		}
 		pthread_mutex_unlock(&philo->meal_mutex);
-		eating_process(philo);
-		sleep_process(philo);
+		eat_cycle(philo);
+		sleep_cycle(philo);
 	}
 	return (NULL);
 }
@@ -71,12 +78,15 @@ void	lock_routine(long time, pthread_mutex_t *mutex, t_philosopher *philo,
 		char *philo_action)
 {
 	pthread_mutex_lock(&philo->prog->stop_mutex);
-	if (philo->prog->stop_flag != 1 || ft_strcmp(philo_action, "died") == 0)
+	if (philo->prog->stop_flag == 1
+		&& ft_strcmp(philo_action, "died") != 0)
 	{
-		pthread_mutex_lock(mutex);
-		printf("%ld %d %s\n", time, philo->i, philo_action);
-		pthread_mutex_unlock(mutex);
+		pthread_mutex_unlock(&philo->prog->stop_mutex);
+		return ;
 	}
+	pthread_mutex_lock(mutex);
+	printf("%ld %d %s\n", time, philo->i, philo_action);
+	pthread_mutex_unlock(mutex);
 	pthread_mutex_unlock(&philo->prog->stop_mutex);
 }
 

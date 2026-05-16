@@ -6,7 +6,7 @@
 /*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:27 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/02 12:49:34 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/16 18:15:33 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,10 @@ int							ft_atoi(const char *nptr);
 int							time_check(t_program *program);
 int							args_check(t_program *program, int argc,
 								char **argv);
-void						sleep_process(t_philosopher *philo);
+void						sleep_cycle(t_philosopher *philo);
 void						lock_routine(long time, pthread_mutex_t *mutex,
 								t_philosopher *philo, char *philo_action);
-void						eating_process(t_philosopher *philo);
+void						eat_cycle(t_philosopher *philo);
 void						*philo_routine(void *arg);
 int							stop_simulation_check(t_program *prog, int i,
 								int *count);
@@ -73,4 +73,5 @@ void						init_all_mutexes(t_program *program);
 int							allocate_data(t_program *program);
 int							ft_strcmp(char *str, char *str2);
 int							args_error(char *message);
+int							check_stop_flag(t_program *prog);
 #endif

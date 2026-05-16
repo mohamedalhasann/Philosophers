@@ -6,7 +6,7 @@
 /*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:16:59 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/02 12:17:00 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/16 17:21:31 by malhassa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,22 @@ int	ft_strcmp(char *str, char *str2)
 	while (str[i] && str2[i] && str[i] == str2[i])
 		i++;
 	return ((unsigned char)str[i] - (unsigned char)str2[i]);
+}
+
+void	ft_sleep(long time, t_program *program)
+{
+	long	start;
+
+	start = gettime();
+	while ((gettime() - start) < time)
+	{
+		pthread_mutex_lock(&program->stop_mutex);
+		if (program->stop_flag)
+		{
+			pthread_mutex_unlock(&program->stop_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&program->stop_mutex);
+		usleep(500);
+	}
 }
