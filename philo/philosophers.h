@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:27 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/16 18:15:33 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/18 00:18:36 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,17 +56,18 @@ int							ft_atoi(const char *nptr);
 int							time_check(t_program *program);
 int							args_check(t_program *program, int argc,
 								char **argv);
-void						sleep_cycle(t_philosopher *philo);
-void						lock_routine(long time, pthread_mutex_t *mutex,
+int						sleep_cycle(t_philosopher *philo);
+void						print_action(long time, pthread_mutex_t *mutex,
 								t_philosopher *philo, char *philo_action);
-void						eat_cycle(t_philosopher *philo);
+int						eat_cycle(t_philosopher *philo);
+void					set_stop_flag(t_program *prog);
 void						*philo_routine(void *arg);
 int							stop_simulation_check(t_program *prog, int i,
 								int *count);
-void						ft_sleep(long time, t_program *program);
+int						ft_sleep(long time, t_program *program);
 void						*one_philo_routine(void *arg);
 int							create_threads(t_program *program);
-int							join_threads(t_program *program);
+int							join_threads(t_program *program, int create_result);
 int							ft_strlen(char *s);
 void						*monitor_routine(void *arg);
 void						init_all_mutexes(t_program *program);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   syntax.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:22 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/16 15:34:13 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/18 00:16:37 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,9 @@ int	args_check(t_program *program, int argc, char **argv)
 	else
 		program->meals_must_eat = -1;
 	return (1);
+}
+int	args_error(char *message)
+{
+	write(2, message, ft_strlen(message));
+	return (0);
 }

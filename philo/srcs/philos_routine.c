@@ -3,14 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   philos_routine.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:18 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/16 19:38:29 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/18 00:20:44 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philosophers.h"
+
+void	print_action(long time, pthread_mutex_t *mutex, t_philosopher *philo,
+		char *philo_action)
+{
+	pthread_mutex_lock(mutex);
+	printf("%ld %d %s\n", time, philo->i, philo_action);
+	pthread_mutex_unlock(mutex);
+}
+int	check_stop_flag(t_program *prog)
+{
+	pthread_mutex_lock(&prog->stop_mutex);
+	if (prog->stop_flag == 1)
+	{
+		pthread_mutex_unlock(&prog->stop_mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&prog->stop_mutex);
+	return (0);
+}
 
 void	*monitor_routine(void *arg)
 {
@@ -19,13 +38,8 @@ void	*monitor_routine(void *arg)
 	int			count;
 
 	prog = (t_program *)arg;
-	pthread_mutex_lock(&prog->stop_mutex);
-	if (prog->stop_flag == 1)
-	{
-		pthread_mutex_unlock(&prog->stop_mutex);
+	if (check_stop_flag(prog))
 		return (NULL);
-	}
-	pthread_mutex_unlock(&prog->stop_mutex);
 	while (1)
 	{
 		count = 0;
@@ -38,18 +52,6 @@ void	*monitor_routine(void *arg)
 		}
 		usleep(1000);
 	}
-}
-
-int	check_stop_flag(t_program *prog)
-{
-	pthread_mutex_lock(&prog->stop_mutex);
-	if (prog->stop_flag == 1)
-	{
-		pthread_mutex_unlock(&prog->stop_mutex);
-		return (1);
-	}
-	pthread_mutex_unlock(&prog->stop_mutex);
-	return (0);
 }
 
 void	*philo_routine(void *arg)
@@ -69,26 +71,12 @@ void	*philo_routine(void *arg)
 			break ;
 		}
 		pthread_mutex_unlock(&philo->meal_mutex);
-		eat_cycle(philo);
-		sleep_cycle(philo);
+		if (!eat_cycle(philo))
+			break ;
+		if (!sleep_cycle(philo))
+			break ;
 	}
 	return (NULL);
-}
-
-void	lock_routine(long time, pthread_mutex_t *mutex, t_philosopher *philo,
-		char *philo_action)
-{
-	pthread_mutex_lock(&philo->prog->stop_mutex);
-	if (philo->prog->stop_flag == 1
-		&& ft_strcmp(philo_action, "died") != 0)
-	{
-		pthread_mutex_unlock(&philo->prog->stop_mutex);
-		return ;
-	}
-	pthread_mutex_lock(mutex);
-	printf("%ld %d %s\n", time, philo->i, philo_action);
-	pthread_mutex_unlock(mutex);
-	pthread_mutex_unlock(&philo->prog->stop_mutex);
 }
 
 void	*one_philo_routine(void *arg)
@@ -97,12 +85,16 @@ void	*one_philo_routine(void *arg)
 
 	philo = (t_philosopher *)arg;
 	pthread_mutex_lock(philo->left_fork);
-	lock_routine(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
+	print_action(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
 		philo, "has taken a fork");
-	ft_sleep(philo->prog->time_to_die, philo->prog);
-	pthread_mutex_lock(&philo->prog->stop_mutex);
-	philo->prog->stop_flag = 1;
-	pthread_mutex_unlock(&philo->prog->stop_mutex);
+	if (!ft_sleep(philo->prog->time_to_die, philo->prog))
+	{
+		pthread_mutex_unlock(philo->left_fork);
+		return (NULL);
+	}
+	set_stop_flag(philo->prog);
+	print_action(gettime() - philo->prog->start_time, &philo->prog->print_mutex,
+		philo, "died");
 	pthread_mutex_unlock(philo->left_fork);
 	return (NULL);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:17:07 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/16 18:18:12 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/18 00:19:17 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,55 +38,12 @@ int	stop_simulation_check(t_program *prog, int i, int *count)
 	{
 		set_stop_flag(prog);
 		pthread_mutex_unlock(&prog->philos[i].meal_mutex);
-		lock_routine(gettime() - prog->start_time, &prog->print_mutex,
+		print_action(gettime() - prog->start_time, &prog->print_mutex,
 			&prog->philos[i], "died");
 		return (1);
 	}
 	pthread_mutex_unlock(&prog->philos[i].meal_mutex);
 	return (0);
-}
-
-int	create_threads(t_program *program)
-{
-	int	i;
-
-	i = 0;
-	init_all_mutexes(program);
-	if (program->n_of_philos == 1)
-	{
-		if (pthread_create(&program->philos[i].philo_thread, NULL,
-				one_philo_routine, &program->philos[i]) != 0)
-			return (0);
-	}
-	else
-	{
-		while (i < program->n_of_philos)
-		{
-			if (pthread_create(&program->philos[i].philo_thread, NULL,
-					philo_routine, &program->philos[i]) != 0)
-				return (0);
-			i++;
-		}
-	}
-	if (pthread_create(&program->monitor, NULL, monitor_routine, program) != 0)
-		return (0);
-	return (1);
-}
-
-int	join_threads(t_program *program)
-{
-	int	i;
-
-	i = 0;
-	while (i < program->n_of_philos)
-	{
-		if (pthread_join(program->philos[i].philo_thread, NULL) != 0)
-			return (0);
-		i++;
-	}
-	if (pthread_join(program->monitor, NULL) != 0)
-		return (0);
-	return (1);
 }
 
 int	main(int argc, char **argv)

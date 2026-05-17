@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malhassa <malhassa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mohamed <mohamed@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/02 12:16:59 by malhassa          #+#    #+#             */
-/*   Updated: 2026/05/16 17:21:31 by malhassa         ###   ########.fr       */
+/*   Updated: 2026/05/17 23:14:09 by mohamed          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	ft_strcmp(char *str, char *str2)
 	return ((unsigned char)str[i] - (unsigned char)str2[i]);
 }
 
-void	ft_sleep(long time, t_program *program)
+int	ft_sleep(long time, t_program *program)
 {
 	long	start;
 
@@ -82,9 +82,10 @@ void	ft_sleep(long time, t_program *program)
 		if (program->stop_flag)
 		{
 			pthread_mutex_unlock(&program->stop_mutex);
-			break ;
+			return (0);
 		}
 		pthread_mutex_unlock(&program->stop_mutex);
 		usleep(500);
 	}
+	return (1);
 }
